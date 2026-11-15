@@ -1,0 +1,254 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASTRA HEALTH | Flight Health Report</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef2f7;
+            color: #17243a;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .report {
+            max-width: 950px;
+            margin: auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+        }
+
+        .header {
+            border-bottom: 3px solid #218fc0;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            color: #147da9;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            color: #66758a;
+        }
+
+        .section {
+            margin-top: 30px;
+        }
+
+        .section h2 {
+            color: #147da9;
+            border-bottom: 1px solid #dce4ed;
+            padding-bottom: 10px;
+        }
+
+        .details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .detail {
+            background: #f3f7fb;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .detail span {
+            display: block;
+            color: #66758a;
+            font-size: 12px;
+            margin-bottom: 7px;
+        }
+
+        .detail strong {
+            font-size: 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 13px;
+        }
+
+        th, td {
+            padding: 12px 8px;
+            border-bottom: 1px solid #dce4ed;
+            text-align: left;
+        }
+
+        th {
+            background: #eaf4fa;
+            color: #147da9;
+        }
+
+        .disclaimer {
+            margin-top: 30px;
+            padding: 18px;
+            background: #fff6e5;
+            border-left: 4px solid #e5a32a;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .print-button {
+            background: #147da9;
+            color: white;
+            padding: 12px 22px;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        .empty {
+            color: #66758a;
+            padding: 15px;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .report {
+                padding: 10px;
+                box-shadow: none;
+            }
+
+            .print-button {
+                display: none;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .details {
+                grid-template-columns: 1fr;
+            }
+
+            .report {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="report">
+
+    <button class="print-button" onclick="window.print()">
+        Print / Save as PDF
+    </button>
+
+    <div class="header">
+        <h1>ASTRA HEALTH</h1>
+        <h2>Flight Health Monitoring Report</h2>
+        <p class="subtitle">
+            Astronaut Self-Monitoring & Health Intelligence System
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>Mission Information</h2>
+
+        <div class="details">
+            <div class="detail">
+                <span>MISSION NAME</span>
+                <strong>{{ mission[0] }}</strong>
+            </div>
+
+            <div class="detail">
+                <span>ASTRONAUT DEMO ID</span>
+                <strong>{{ mission[1] }}</strong>
+            </div>
+
+            <div class="detail">
+                <span>SPACECRAFT</span>
+                <strong>{{ mission[4] }}</strong>
+            </div>
+
+            <div class="detail">
+                <span>MISSION DAY</span>
+                <strong>{{ mission[2] }} / {{ mission[3] }}</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Health Check-in History</h2>
+
+        {% if records %}
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Date & Time</th>
+                    <th>Heart Rate</th>
+                    <th>Blood Pressure</th>
+                    <th>Temp °C</th>
+                    <th>Sleep</th>
+                    <th>Mood</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for record in records %}
+                <tr>
+                    <td>{{ record[7] }}</td>
+                    <td>{{ record[0] }} BPM</td>
+                    <td>{{ record[1] }}/{{ record[2] }}</td>
+                    <td>{{ record[3] }}</td>
+                    <td>{{ record[4] }} hrs</td>
+                    <td>{{ record[5] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% else %}
+        <p class="empty">No health check-ins have been recorded.</p>
+        {% endif %}
+    </div>
+
+    <div class="section">
+        <h2>Reported Symptoms & Notes</h2>
+
+        {% if records %}
+            {% for record in records %}
+                {% if record[6] and record[6].strip() %}
+                    <div class="detail">
+                        <strong>{{ record[7] }}</strong>
+                        <p>{{ record[6] }}</p>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            <p class="empty">No records available.</p>
+        {% endif %}
+    </div>
+
+    <div class="disclaimer">
+        <strong>IMPORTANT:</strong> This report is generated by an
+        educational prototype. Measurements are user-entered and
+        have not been independently verified. This report does not
+        provide medical diagnoses or replace professional medical
+        evaluation or approved mission medical protocols.
+    </div>
+
+    <p class="subtitle">
+        ASTRA HEALTH | Generated: {{ records[0][7] if records else "No records available" }}
+    </p>
+
+</div>
+
+</body>
+</html>

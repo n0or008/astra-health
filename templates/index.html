@@ -1,0 +1,766 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASTRA HEALTH | Mission Control</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <header class="topbar">
+        <a href="{{ url_for('logout') }}" class="logout-btn">
+            <a href="{{ url_for('download_data') }}" class="download-btn">
+    ↓ DOWNLOAD HEALTH DATA
+</a>
+    LOG OUT →
+</a>
+        <div class="brand">
+            <span class="logo">✦</span>
+            <div>
+                <h1>ASTRA HEALTH</h1>
+                <p>ASTRONAUT HEALTH INTELLIGENCE SYSTEM</p>
+            </div>
+        </div>
+
+        <div class="mission">
+            <span class="status-dot"></span>
+            SYSTEM ONLINE
+            <span class="mission-label">MISSION DAY 042</span>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <section class="welcome">
+            {% with messages = get_flashed_messages() %}
+    {% for message in messages %}
+        <div class="success-message">{{ message }}</div>
+    {% endfor %}
+{% endwith %}
+            <div>
+                <p class="eyebrow">MISSION CONTROL / CREW HEALTH</p>
+                <h2>Health Overview</h2>
+                <p>Welcome back, {{ full_name }}. Here's your health snapshot.</p>
+            <div class="report-actions">
+    <a href="/report" class="report-button">
+        <span>📄</span> Generate Flight Health Report
+    </a>
+</div>
+            </div>
+            <div class="date-box">
+                <span>MISSION STATUS</span>
+                <strong>ACTIVE</strong>
+            </div>
+        </section>
+
+        <section class="stats">
+
+            <div class="stat-card">
+    <p>HEART RATE</p>
+    <h3>{{ latest[0] if latest else '--' }} <small>BPM</small></h3>
+    <span>{{ 'Latest recorded reading' if latest else 'Awaiting reading' }}</span>
+</div>
+
+            <div class="stat-card">
+    <p>BLOOD PRESSURE</p>
+    <h3>
+        {{ latest[1] if latest else '--' }}/{{ latest[2] if latest else '--' }}
+        <small>mmHg</small>
+    </h3>
+    <span>{{ 'Latest recorded reading' if latest else 'Awaiting reading' }}</span>
+</div>
+
+            <div class="stat-card">
+    <p>TEMPERATURE</p>
+    <h3>{{ latest[3] if latest else '--' }} <small>°C</small></h3>
+    <span>{{ 'Latest recorded reading' if latest else 'Awaiting reading' }}</span>
+</div>
+
+            <div class="stat-card">
+    <p>SLEEP</p>
+    <h3>{{ latest[4] if latest else '--' }} <small>hours</small></h3>
+    <span>{{ 'Latest recorded reading' if latest else 'Awaiting reading' }}</span>
+</div>
+
+        </section>
+
+        <section class="content-grid">
+
+            <div class="panel">
+                <div class="panel-heading">
+                    <div>
+                        <p class="eyebrow">DAILY MONITORING</p>
+                        <h2>Health Check-in</h2>
+                    </div>
+                    <span class="tag">DAILY LOG</span>
+                </div>
+
+                <p class="description">
+                    Record your latest health measurements to update
+                    your mission health record.
+                </p>
+
+                <form action="/checkin" method="POST" class="health-form">
+
+    <div class="form-group">
+        <label>Heart Rate (BPM)</label>
+        <input type="number" name="heart_rate"
+               placeholder="Example: 72" min="1" max="250" required>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label>Systolic BP (mmHg)</label>
+            <input type="number" name="systolic"
+                   placeholder="Example: 120" min="1" required>
+        </div>
+
+        <div class="form-group">
+            <label>Diastolic BP (mmHg)</label>
+            <input type="number" name="diastolic"
+                   placeholder="Example: 80" min="1" required>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label>Body Temperature (°C)</label>
+            <input type="number" name="temperature"
+                   placeholder="Example: 36.8" step="0.1" required>
+        </div>
+
+        <div class="form-group">
+            <label>Sleep Duration (hours)</label>
+            <input type="number" name="sleep"
+                   placeholder="Example: 7.5" min="0" max="24"
+                   step="0.1" required>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Mood</label>
+        <select name="mood" required>
+            <option value="">Select your mood</option>
+            <option value="Very good">Very good</option>
+            <option value="Good">Good</option>
+            <option value="Neutral">Neutral</option>
+            <option value="Low">Low</option>
+            <option value="Very low">Very low</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Symptoms or Additional Notes</label>
+        <textarea name="symptoms"
+                  placeholder="Describe any symptoms or observations..."
+                  rows="3"></textarea>
+    </div>
+
+    <button type="submit" class="submit-btn">
+        SUBMIT HEALTH RECORD →
+    </button>
+
+</form>
+
+            </div>
+
+            <div class="panel">
+                <p class="eyebrow">MISSION INTELLIGENCE</p>
+                <h2>Spaceflight Hazards</h2>
+
+                <div class="hazard">
+                    <span>☢</span>
+                    <div>
+                        <strong>Space Radiation</strong>
+                        <p>Exposure to energetic particles.</p>
+                    </div>
+                </div>
+
+                <div class="hazard">
+                    <span>◉</span>
+                    <div>
+                        <strong>Microgravity</strong>
+                        <p>Changes affecting bones and muscles.</p>
+                    </div>
+                </div>
+
+                <div class="hazard">
+                    <span>⌂</span>
+                    <div>
+                        <strong>Isolation</strong>
+                        <p>Effects on sleep and wellbeing.</p>
+                    </div>
+                </div>
+
+                <div class="hazard">
+                    <span>◇</span>
+                    <div>
+                        <strong>Closed Environment</strong>
+                        <p>Cabin conditions and environmental risks.</p>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+        <footer>
+            ASTRA HEALTH © 2026 | PROTOTYPE VERSION 1.0
+            <p>For demonstration and educational purposes only.</p>
+        
+<section class="charts-section">
+
+    <div class="panel-heading">
+        <div>
+            <p class="eyebrow">HEALTH ANALYTICS</p>
+            <h2>Health History</h2>
+        </div>
+        <span class="tag">LAST 30 RECORDS</span>
+    </div>
+
+    <div class="charts-grid">
+
+        <div class="panel chart-panel">
+            <h3>Heart Rate History</h3>
+            <p class="description">Recorded heart rate over time (BPM)</p>
+            <canvas id="heartRateChart"></canvas>
+        </div>
+
+        <div class="panel chart-panel">
+            <h3>Sleep History</h3>
+            <p class="description">Recorded sleep duration (hours)</p>
+            <canvas id="sleepChart"></canvas>
+        </div>
+
+    </div>
+
+</section>
+
+<section class="alerts-section">
+
+    <div class="panel-heading">
+        <div>
+            <p class="eyebrow">MISSION SAFETY</p>
+            <h2>Crew Health Alerts</h2>
+        </div>
+        <span class="tag">SYSTEM ACTIVE</span>
+    </div>
+
+    <div class="alert-list">
+
+        {% for alert in alerts %}
+
+        <div class="alert-card">
+            <div class="alert-icon">!</div>
+
+            <div class="alert-content">
+                <h3>Health Check-in Review</h3>
+                <p>{{ alert }}</p>
+            </div>
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    <p class="alert-disclaimer">
+        ASTRA HEALTH provides prototype reminders only.
+        It does not diagnose medical conditions or replace
+        professional medical guidance.
+    </p>
+
+</section>        
+<section class="trends-section">
+
+    <div class="panel-heading">
+        <div>
+            <p class="eyebrow">BIOMETRIC ANALYTICS</p>
+            <h2>Health Trend Monitoring</h2>
+        </div>
+        <span class="tag">LATEST COMPARISON</span>
+    </div>
+
+    {% if trends %}
+
+    <div class="trends-grid">
+
+        {% for name, change, unit in trends %}
+
+        <div class="panel trend-card">
+            <p class="description">{{ name }}</p>
+
+            <h3 class="trend-value">
+                {{ change }} <span>{{ unit }}</span>
+            </h3>
+
+            <p class="trend-caption">
+                Change since previous check-in
+            </p>
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+
+    <div class="panel empty-trends">
+        <p>Not enough data yet.</p>
+        <span>Submit at least two health check-ins to compare trends.</span>
+    </div>
+
+    {% endif %}
+
+    <p class="alert-disclaimer">
+        Changes are calculated from the two latest recorded check-ins.
+        They are informational and are not medical assessments.
+    </p>
+
+</section>
+<section class="hazards-section">
+
+    <div class="panel-heading">
+        <div>
+            <p class="eyebrow">NASA HUMAN RESEARCH PROGRAM</p>
+            <h2>Mission Hazard Intelligence</h2>
+        </div>
+        <span class="tag">RIDGE MONITOR</span>
+    </div>
+
+    <p class="hazards-intro">
+        Five major hazards can affect astronaut health and
+        performance during long-duration space missions.
+    </p>
+
+    <div class="hazards-grid">
+
+        <div class="panel hazard-card">
+            <div class="hazard-number">01</div>
+            <h3>Space Radiation</h3>
+            <p>
+                High-energy particles and solar events can expose
+                astronauts to radiation beyond Earth's natural protection.
+            </p>
+            <div class="hazard-focus">
+                <strong>Monitoring focus</strong>
+                <span>Radiation exposure and dosimeter information</span>
+            </div>
+        </div>
+
+        <div class="panel hazard-card">
+            <div class="hazard-number">02</div>
+            <h3>Isolation & Confinement</h3>
+            <p>
+                Living in a confined environment for long periods
+                can affect sleep, mood, behaviour and teamwork.
+            </p>
+            <div class="hazard-focus">
+                <strong>Monitoring focus</strong>
+                <span>Sleep duration, mood and crew well-being</span>
+            </div>
+        </div>
+
+        <div class="panel hazard-card">
+            <div class="hazard-number">03</div>
+            <h3>Distance from Earth</h3>
+            <p>
+                Communication delays and limited access to supplies
+                and medical support make self-sufficiency essential.
+            </p>
+            <div class="hazard-focus">
+                <strong>Monitoring focus</strong>
+                <span>Health records and onboard medical readiness</span>
+            </div>
+        </div>
+
+        <div class="panel hazard-card">
+            <div class="hazard-number">04</div>
+            <h3>Altered Gravity</h3>
+            <p>
+                Microgravity and changing gravity environments
+                can affect bones, muscles, balance and cardiovascular function.
+            </p>
+            <div class="hazard-focus">
+                <strong>Monitoring focus</strong>
+                <span>Heart rate, blood pressure and physical health assessments</span>
+            </div>
+        </div>
+
+        <div class="panel hazard-card">
+            <div class="hazard-number">05</div>
+            <h3>Hostile / Closed Environments</h3>
+            <p>
+                Spacecraft conditions such as temperature, pressure,
+                lighting, noise and microbial exposure matter for crew health.
+            </p>
+            <div class="hazard-focus">
+                <strong>Monitoring focus</strong>
+                <span>Environmental conditions and immune health research</span>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="nasa-reference">
+        <h3>NASA Research Reference</h3>
+        <p>
+            Learn more about the five hazards through NASA's
+            Human Research Program.
+        </p>
+        <a href="https://www.nasa.gov/hrp/hazards/"
+           target="_blank">
+            Explore NASA's Five Hazards →
+        </a>
+    </div>
+
+</section>
+<section class="mission-section">
+
+    <div class="panel-heading">
+        <div>
+            <p class="eyebrow">MISSION CONFIGURATION</p>
+            <h2>Mission Profile</h2>
+        </div>
+        <span class="tag">CREW SETTINGS</span>
+    </div>
+
+    <div class="panel mission-panel">
+
+        <div class="mission-details">
+            <div>
+                <p class="description">MISSION</p>
+                <h3>{{ mission[0] }}</h3>
+            </div>
+
+            <div>
+                <p class="description">ASTRONAUT ID</p>
+                <h3>{{ mission[1] }}</h3>
+            </div>
+
+            <div>
+                <p class="description">SPACECRAFT</p>
+                <h3>{{ mission[4] }}</h3>
+            </div>
+
+            <div>
+                <p class="description">MISSION PROGRESS</p>
+                <h3>Day {{ mission[2] }} / {{ mission[3] }}</h3>
+            </div>
+        </div>
+
+        <form action="/mission-profile" method="POST"
+              class="health-form">
+
+            <h3>Update Mission Settings</h3>
+
+            <div class="form-row">
+
+                <div class="form-group">
+                    <label>Mission Name</label>
+                    <input type="text" name="mission_name"
+                           value="{{ mission[0] }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Astronaut Demo ID</label>
+                    <input type="text" name="astronaut_id"
+                           value="{{ mission[1] }}" required>
+                </div>
+
+            </div>
+
+            <div class="form-row">
+
+                <div class="form-group">
+                    <label>Current Mission Day</label>
+                    <input type="number" name="mission_day"
+                           min="1" max="10000"
+                           value="{{ mission[2] }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Total Mission Duration (Days)</label>
+                    <input type="number" name="mission_duration"
+                           min="1" max="10000"
+                           value="{{ mission[3] }}" required>
+                </div>
+
+            </div>
+
+            <div class="form-group">
+                <label>Spacecraft</label>
+                <input type="text" name="spacecraft"
+                       value="{{ mission[4] }}" required>
+            </div>
+
+            <button type="submit" class="submit-btn">
+                Save Mission Profile
+            </button>
+
+        </form>
+
+    </div>
+
+</section>
+
+<section class="recommendations-section">
+    <div class="section-heading">
+        <p class="eyebrow">PREVENTIVE SUPPORT / MISSION WELLNESS</p>
+        <h2>Countermeasure Guidance</h2>
+        <p>NASA-informed strategies for managing common spaceflight health risks.</p>
+    </div>
+
+    <div class="recommendations-grid">
+
+        <div class="recommendation-card">
+            <span class="recommendation-icon">🏃</span>
+            <h3>Bone & Muscle Health</h3>
+            <p>Exercise is an important countermeasure against changes in muscle strength, bone health and cardiovascular fitness.</p>
+            <strong>Monitoring focus:</strong>
+            <span>Exercise activity and physical performance.</span>
+        </div>
+
+        <div class="recommendation-card">
+            <span class="recommendation-icon">🌙</span>
+            <h3>Sleep & Fatigue</h3>
+            <p>Consistent sleep opportunities and careful work-rest scheduling help support alertness and performance.</p>
+            <strong>Monitoring focus:</strong>
+            <span>Sleep duration, sleep quality and fatigue reports.</span>
+        </div>
+
+        <div class="recommendation-card">
+            <span class="recommendation-icon">🥗</span>
+            <h3>Nutrition & Hydration</h3>
+            <p>Nutrition is an important part of maintaining crew health during spaceflight. Follow the mission's approved nutrition plan.</p>
+            <strong>Monitoring focus:</strong>
+            <span>Nutrition records and hydration observations.</span>
+        </div>
+
+        <div class="recommendation-card">
+            <span class="recommendation-icon">🧠</span>
+            <h3>Behavioral Wellbeing</h3>
+            <p>Regular communication, team support and behavioral-health resources can help crews manage isolation and confinement.</p>
+            <strong>Monitoring focus:</strong>
+            <span>Mood check-ins, stress reports and social connection.</span>
+        </div>
+
+        <div class="recommendation-card">
+            <span class="recommendation-icon">☢️</span>
+            <h3>Radiation Protection</h3>
+            <p>Radiation exposure is monitored through mission systems and managed using approved mission protection procedures.</p>
+            <strong>Monitoring focus:</strong>
+            <span>Radiation monitoring data and mission alerts.</span>
+        </div>
+
+        <div class="recommendation-card">
+            <span class="recommendation-icon">🩺</span>
+            <h3>Medical Monitoring</h3>
+            <p>Changes in health readings or new symptoms should be documented and reviewed according to mission medical procedures.</p>
+            <strong>Monitoring focus:</strong>
+            <span>Vital signs, symptoms and health trends.</span>
+        </div>
+
+    </div>
+
+    <p class="recommendation-note">
+        IMPORTANT: These are educational guidance topics, not personalized medical instructions.
+        Crew members should follow approved mission protocols and contact the flight surgeon
+        when required.
+    </p>
+</section>
+
+</footer>
+
+    </main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const records = {{ records | tojson }};
+
+    const labels = records.map(record =>
+        record[0].replace("T", " ").substring(0, 16)
+    );
+
+    const heartRates = records.map(record => record[1]);
+    const sleepHours = records.map(record => record[2]);
+
+    // Heart rate chart
+    new Chart(document.getElementById("heartRateChart"), {
+        type: "line",
+
+        data: {
+            labels: labels,
+
+            datasets: [{
+                label: "Heart Rate (BPM)",
+                data: heartRates,
+                borderColor: "#61C9F2",
+                backgroundColor: "rgba(97, 201, 242, 0.12)",
+                fill: true,
+                tension: 0.3
+            }]
+        },
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+
+            scales: {
+                y: {
+                    title: {
+                        display: true,
+                        text: "BPM",
+                        color: "#91A0B8"
+                    },
+                    ticks: { color: "#91A0B8" }
+                },
+                x: {
+                    ticks: { color: "#91A0B8" }
+                }
+            }
+        }
+    });
+
+    // Sleep chart
+    new Chart(document.getElementById("sleepChart"), {
+        type: "line",
+
+        data: {
+            labels: labels,
+
+            datasets: [{
+                label: "Sleep (Hours)",
+                data: sleepHours,
+                borderColor: "#B49AFF",
+                backgroundColor: "rgba(180, 154, 255, 0.12)",
+                fill: true,
+                tension: 0.3
+            }]
+        },
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+
+            scales: {
+                y: {
+                    title: {
+                        display: true,
+                        text: "Hours",
+                        color: "#91A0B8"
+                    },
+                    ticks: { color: "#91A0B8" }
+                },
+                x: {
+                    ticks: { color: "#91A0B8" }
+                }
+            }
+        }
+    });
+</script>
+
+
+<!-- ASTRA HEALTH INTELLIGENCE -->
+
+<section class="guidance-section">
+    <h2>✦ DAILY WELLNESS INTELLIGENCE</h2>
+    <p class="section-subtitle">
+        Automated summary of your latest crew health check-in
+    </p>
+
+    <div class="guidance-card">
+        {% if wellness_summary %}
+            {% for item in wellness_summary %}
+                <p>✦ {{ item }}</p>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <p class="guidance-note">
+        This summary is based on self-reported information.
+        It is not a medical diagnosis or a substitute for
+        professional medical review.
+    </p>
+</section>
+
+<!-- MISSION HEALTH TIMELINE -->
+
+<section class="guidance-section">
+    <h2>MISSION HEALTH TIMELINE</h2>
+    <p class="section-subtitle">
+        Blood pressure readings across recorded check-ins
+    </p>
+
+    <div class="guidance-card">
+        <canvas id="bloodPressureChart"></canvas>
+    </div>
+</section>
+
+<script>
+const timelineRecords = {{ records | tojson }};
+
+const timelineLabels = timelineRecords.map(
+    record => record[0]
+);
+
+const systolicData = timelineRecords.map(
+    record => record[3]
+);
+
+const diastolicData = timelineRecords.map(
+    record => record[4]
+);
+
+new Chart(document.getElementById("bloodPressureChart"), {
+    type: "line",
+    data: {
+        labels: timelineLabels,
+        datasets: [
+            {
+                label: "Systolic BP",
+                data: systolicData,
+                borderColor: "#35b9ef",
+                tension: 0.3
+            },
+            {
+                label: "Diastolic BP",
+                data: diastolicData,
+                borderColor: "#b58cff",
+                tension: 0.3
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                labels: {
+                    color: "#eaf2ff"
+                }
+            }
+        },
+        scales: {
+            x: {
+                ticks: { color: "#94a9c1" }
+            },
+            y: {
+                ticks: { color: "#94a9c1" },
+                title: {
+                    display: true,
+                    text: "Blood pressure (mmHg)",
+                    color: "#94a9c1"
+                }
+            }
+        }
+    }
+});
+</script>
+
+</body>
+</html>
